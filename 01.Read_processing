@@ -1,0 +1,161 @@
+# Initial processing of the raw reads
+
+## Location
+
+I start working in the following directory  
+```
+/home/turly826/nobackup/whole_genome_resequencing/source_files/X201SC23070688-Z01-F001
+```
+
+It contains the following files:
+
+```
+01.RawData  
+02.Report_X201SC23070688-Z01-F001.zip  
+checkSize.xls  
+MD5.txt  
+MD5.zip  
+Readme.html
+```
+
+I read the Readme file first. This contains links with the structure of the data. ```01.RawData``` contains a folder for each sample. Each of these folders contains three files; one MD5 hash to check data integrity and two files of reads - forward and reverse. For sample F1, these are
+
+```
+F1_DKDN230032152-1A_HLK32DSX7_L1_1.fq.gz  
+F1_DKDN230032152-1A_HLK32DSX7_L1_2.fq.gz  
+MD5.txt
+```
+
+The sequence data are paired-end, meaning that we have forward and reverse sequences for each fragment. The R1 file contains sequences in one direction and the R2 file in the other direction.
+
+The data are in fastq files. The .gz is a zip format. They can be unzipped using ```gunzip $filename```. The fastq format consists of four lines:
+1. '@' and metadata
+2. The DNA sequence
+3. '+'
+4. Quality scores for each base in the sequence
+
+   
+## CheckSum
+
+The files ```checkSize.xls``` and ```MD5.txt``` contain the checksum values and ```MD5.zip``` contains a tool for checking the checksums. The Readme has the following information:
+
+> An MD5 checksum is a 32-character hexadecimal number that is computed on a file. If two files have the same MD5 checksum value, it is highly probable that the two files are the same. It is generally used to check data integrity.
+> In Linux or Mac system, the following command could be used directly to check MD5(If md5sum command is not available, please follow the manual inside the MD5.zip package to install.):
+    $ md5sum -c MD5.txt    (it may take a while)
+
+
+I ran
+
+```
+md5sum -c MD5.txt
+```
+
+and all the files got an output of ```OK```
+
+
+
+
+
+
+## Quality control
+
+First, we check the quality of the data files. Since the files are very large, we do this on only a subset of the data. The module FastQC is used for the quality control processing. 
+
+
+```
+cd ../ #move up to "source_files
+mkdir qc_files  #make a folder to put the QC files into
+grep -c @ X201SC23070688-Z01-F001/01.RawData/W1/W1_DKDN230032088-1A_HLFMGDSX7_L4_1.fq.gz #count the number of lines in one sequence file
+```
+
+> 866438
+
+There are over 800,000 sequences of forward-reads for sample W1. 
+
+I want to be able to run scripts over all the sequence files and this folder structure is annoying. I'm going to leave the 0.1 RawData as is, and copy all of the files into a new folder in source_files.
+
+```
+mkdir raw_sequence_files_copy
+ln -s ../../source_files/X201SC23070688-Z01-F001/01.RawData/*/*.gz .          # the * wildcard works over directories, too. What beauty. 
+```
+I wrote a function to do this, called copy_subset_seqdata.sh, but the code above is a much better method. 
+
+```
+module load FastQC
+fastqc *.fq.gz
+mv *.zip ../qc_files
+mv *.html ../qc_files
+```
+
+The QC reports show:
+The per-base sequence content is a bit wobbly at the start - that's normal. The per sequence GC content is slightly off but nothing to worry about. It's got a fatter-than-expected tail for the low % GC counts.
+There is a bump in the sequence duplication levels at >10, and high values for lower numbers. 
+No adaptor content. Don't I still have adaptors in there?
+Pass or ! for all categories
+
+The reports for all samples looked at. The above generally applies, with the following variations:
+
+F16_1, F16_2, H2_2, H17_2, H18_2, W11_2, W28_1 and W28_2 all fail (gets a red cross) on per-sequence GC content. It looks a little worse than the others are but not so extreme.
+W9_1 and W9_2 fail (gets a red cross) on per-sequence GC content. These do have a significant lump in the low CG% side of the curve. I think it's also got higher sequence duplication levels than other samples.
+
+
+
+
+
+## Adapter trimming
+
+We use the module cutadapt to trim off adapters and removing reads shorter than 50bp. We need to give it the actual adapter sequences to remove
+
+For paired-end reads: cutadapt -a ADAPT1 -A ADAPT2 [options] -o out1.fastq -p out2.fastq in1.fastq in2.fastq
+(.gz compressed file type supported and automatically detected)
+
+The Novogene documentation tells us the adaptor sequences are
+  5' Adapter:
+  5'-AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT-3'
+  3' Adapter:
+  5'-GATCGGAAGAGCACACGTCTGAACTCCAGTCACGGATGACTATCTCGTATGCCGTCTTCTGCTTG-3'
+  
+First test things on a single file, then when that works do all files.
+
+```
+#!/bin/bash -e
+
+#SBATCH --job-name=SlurmTest # job name (shows up in the queue)
+#SBATCH --time=03:00:00      # Walltime (HH:MM:SS)
+#SBATCH --mem=1G          # Memory in GB
+
+module load cutadapt
+for filename in *1.fq.gz
+do
+   file=$(basename ${filename} 1.fq.gz)
+
+   cutadapt -a AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT -A GATCGGAAGAGCACACGTCTGAACTCCAGTCACGGATGACTATCTCGTATGCCGTCTTCTGCTTG  -q 25 -o trimmed_${file}1.fastq.gz --minimum-length 50:50   -p  trimmed_${file}2.fastq.gz  ${file}1.fq.gz  ${file}2.fq.gz
+
+done
+```
+
+I move the trimmed folders to a new folder
+
+```
+cd ../
+mkdir trimmed_files
+qc_files  raw_sequence_files_copy  trimmed_files  X201SC23070688-Z01-F001  X201SC23070688-Z01-F001.tar
+cd raw_sequence_files_copy/
+mv trimmed* ../trimmed_files/
+```
+
+Now we go back and check the quality without the adapters.
+
+```
+cd ../trimmed_files/
+module load FastQC
+fastqc *.gz
+```
+
+The QC reports look essentially the same as before the trimming step. 
+The following files fail on CG content %: F16_1, F16_2, H17_2, W11_2, W28_1, W28_2, W9_1, W9_10
+
+
+
+
+
