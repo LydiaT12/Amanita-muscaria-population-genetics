@@ -43,12 +43,77 @@ The summary has fewer differences with phalloides than either of the old muscari
 
 
 
+
+tail of a vcf:
+```
+Scaffold240_Amanita_muscaria    785     .       G       A       100     *       TYPE=SUBSTITUTE
+Scaffold240_Amanita_muscaria    787     .       T       C       100     *       TYPE=SUBSTITUTE
+Scaffold240_Amanita_muscaria    795     .       C       CA      100     *       TYPE=INSERT
+```
+
+I was getting the error message "FILTER '*' is not defined in the header"
+
+```
+sed -i "s/"*"/PASS/" A_muscaria_old_aligned.copy.vcf
+```
+
 module load BCFtools
 module load SAMtools
-bgzip A_muscaria_guessowii_aligned.vcf 
-bcftools index A_muscaria_guessowii_aligned.vcf.gz
 
-bgzip A_muscaria_old_aligned.vcf
-bgzip A_phalloides_aligned.vcf 
-bcftools index A_muscaria_old_aligned.vcf.gz 
-bcftools index A_phalloides_aligned.vcf.gz
+bgzip A_muscaria_guessowii_aligned.copy.vcf 
+bcftools index A_muscaria_guessowii_aligned.copy.vcf.gz
+
+bgzip A_muscaria_old_aligned.copy.vcf
+bgzip A_phalloides_aligned.copy.vcf 
+bcftools index A_phalloides_aligned.copy.vcf.gz 
+bcftools index A_muscaria_old_aligned.vcf.gz
+
+<!--
+```
+bcftools norm --check-ref x --fasta-ref GSAlign/A_muscaria_genome_2024.fasta A_muscaria_old_aligned.copy.vcf.gz > A_muscaria_old.aligned.copy.norm.vcf.gz
+# Output: Lines   total/split/joined/realigned/skipped:   890951/0/0/12861/200408
+bcftools norm --check-ref x --fasta-ref GSAlign/A_muscaria_genome_2024.fasta A_phalloides_aligned.copy.vcf.gz > A_phalloides.aligned.copy.norm.vcf.gz
+# Lines   total/split/joined/realigned/skipped:   23660/0/0/22/14450
+bcftools norm --check-ref x --fasta-ref GSAlign/A_muscaria_genome_2024.fasta A_muscaria_guessowii_aligned.copy.vcf.gz  > A_muscaria_guessowii.aligned.copy.norm.vcf.gz
+# Lines   total/split/joined/realigned/skipped:   2110740/0/0/24427/915876
+```
+-->
+
+```
+bcftools norm --check-ref x --fasta-ref GSAlign/A_muscaria_genome_2024.fasta A_muscaria_old_aligned.copy.vcf.gz -Oz > A_muscaria_old.2.aligned.copy.norm.vcf.gz
+# Output: Lines   total/split/joined/realigned/skipped:   890951/0/0/12861/200408
+bcftools norm --check-ref x --fasta-ref GSAlign/A_muscaria_genome_2024.fasta A_phalloides_aligned.copy.vcf.gz -Oz > A_phalloides.2.aligned.copy.norm.vcf.gz
+# Lines   total/split/joined/realigned/skipped:   23660/0/0/22/14450
+bcftools norm --check-ref x --fasta-ref GSAlign/A_muscaria_genome_2024.fasta A_muscaria_guessowii_aligned.copy.vcf.gz  -Oz > A_muscaria_guessowii.2.aligned.copy.norm.vcf.gz
+# Lines   total/split/joined/realigned/skipped:   2110740/0/0/24427/915876
+```
+
+bcftools index A_phalloides.aligned.copy.norm.vcf.gz 
+bcftools index A_muscaria_old.aligned.copy.norm.vcf.gz
+bcftools index A_muscaria_guessowii.aligned.copy.norm.vcf.gz
+
+
+bcftools index A_muscaria_guessowii.2.aligned.copy.norm.vcf.gz 
+
+
+bcftools merge A_muscaria_old.2.aligned.copy.norm.vcf.gz A_phalloides.2.aligned.copy.norm.vcf.gz -Oz -o merged2.vcf.gz
+bcftools index merged2.vcf.gz 
+bcftools merge merged2.vcf.gz A_muscaria_guessowii.2.aligned.copy.norm.vcf.gz -Oz -o merged3.vcf.gz
+
+
+<!--
+```
+bcftools merge A_muscaria_old.aligned.copy.norm.vcf.gz A_phalloides.aligned.copy.norm.vcf.gz -Oz -o merged.vcf.gz --no-index
+```
+It seemed to produce something
+
+
+Tried adding -Oz to the norm function. 
+bcftools merge A_muscaria_old.2.aligned.copy.norm.vcf.gz A_phalloides.2.aligned.copy.norm.vcf.gz -Oz -o merged2.vcf.gz
+> Failed to open A_muscaria_old.2.aligned.copy.norm.vcf.gz: could not load index
+
+tried indexing again
+bcftools index A_muscaria_old.2.aligned.copy.norm.vcf.gz 
+[turly826@wbn001 8.outgroups]$ bcftools index A_phalloides.2.aligned.copy.norm.vcf.gz 
+[turly826@wbn001 8.outgroups]$ bcftools merge A_muscaria_old.2.aligned.copy.norm.vcf.gz A_phalloides.2.aligned.copy.norm.vcf.gz -Oz -o merged2.vcf.gz
+-->
