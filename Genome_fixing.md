@@ -9,7 +9,7 @@
 
 
 
-# MITObim
+# Long reads in the bad "gap"
 
 This takes an initial "bait" bit of sequence and assembles genome bits around it. 
 What would be a good bait? Maybe a MAT sequence from another species. But maybe that isn't exactly what exists here. 
@@ -60,14 +60,44 @@ Now gapreads.fastq is a fastq file containing the three long reads which justify
 
 
 
+# MITObim
+
+Docker/singularity commands:
+
+Sooo... to make this docker run as a singularity, I first load singularity
+```module load Singularity```
+Set the directory to work in
+```WORKING_DIR=/home/turly826/nobackup/nanopore_reference_genome/long_read_mapping/mitbim_files```
+Download and convert the Docker container as a Singularity image:
+```singularity pull mitobim.sif docker://chrishah/mitobim```
+Give the container access to the directory:
+```singularity run --bind $PWD mitobim.sif```
+
+
+```
+module load Singularity
+WORKING_DIR=/home/turly826/nobackup/nanopore_reference_genome/long_read_mapping/mitbim_files
+singularity pull mitobim.sif docker://chrishah/mitobim # this should be a set-up-only step (I believe)
+singularity run --bind $PWD mitobim.sif
+```
+
+The image had a lot of empty files. The links to the docker images were broken. idk, maybe the image is broken?
 
 
 
 
+## Second attempt
+so then I tried with the installing it option. I downloaded MIRA
+```
+wget https://sourceforge.net/projects/mira-assembler/files/MIRA/stable/mira_4.0.2_linux-gnu_x86_64_static.tar.bz2
+tar xf mira_4.0.2_linux-gnu_x86_64_static.tar.bz2
+```
+_Something_ downloaded. 
 
+Then I tried ```git clone --recursive git://github.com/chrishah/MITObim.git```
+This got a timeout error. 
 
-
-
+I'm going to stop and cry. Then learn about docker/container things. 
 
 
 
