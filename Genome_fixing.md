@@ -43,10 +43,31 @@ Yup. Deleted one entry not on Scaffold 1, where the same coordinate had turned u
 I think that what I want are the three read IDs:
 ```
 240e12e9-5bb4-44f3-a871-c6b1cf457472
-240e12e9-5bb4-44f3-a871-c6b1cf457472
+6b8e6cad-c009-44ea-b2d1-14bce6a007e5
 85d99cee-938b-432e-9788-26f6d971b78b
 ```
 
-If I go into the fasta, each entry should start with @numbersofthereadid. I can grep the IDs that I want + the following 3 lines to get the full fasta read. 
+If I go into the fasta, each entry should start with @numbersofthereadid. I can grep the IDs that I want + the following 3 lines to get the full fastq read. 
+
+```
+grep 240e12e9-5bb4-44f3-a871-c6b1cf457472 longreads.fastq -A 4 >> gapreads.fastq
+grep 6b8e6cad-c009-44ea-b2d1-14bce6a007e5 longreads.fastq -A 4 >> gapreads.fastq
+grep 85d99cee-938b-432e-9788-26f6d971b78b longreads.fastq -A 4 >> gapreads.fastq
+```
+
+Now gapreads.fastq is a fastq file containing the three long reads which justify the filling of this gap. 
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
