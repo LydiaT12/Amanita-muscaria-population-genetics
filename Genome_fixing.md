@@ -84,6 +84,37 @@ singularity run --bind $PWD mitobim.sif
 The image had a lot of empty files. The links to the docker images were broken. idk, maybe the image is broken?
 
 
+## Singularity 2
+
+```
+module load Singularity
+singularity pull docker://chrishah/mitobim
+```
+
+```
+singularity inspect mitobim_latest.sif
+#Data:
+org.label-schema.build-arch: amd64
+org.label-schema.build-date: Wednesday_12_June_2024_14:32:30_NZST
+org.label-schema.schema-version: 1.0
+org.label-schema.usage.singularity.deffile.bootstrap: docker
+org.label-schema.usage.singularity.deffile.from: chrishah/mitobim
+org.label-schema.usage.singularity.version: 3.11.3
+```
+
+Do I ... just run it?
+```
+singularity run mitobim_latest.sif 
+MITObim.pl
+  MITObim.pl -sample MITOtest -ref Amamus_LR1 -readpool ~/PATH/TO/SHORTREADS.fastq --quick ~/PATH/TO/SHORTREADS.fasta -end 100 --clean &> log
+
+# -readpool: are the pool of short reads to assemble with. These need to be interleaved (There should be a way to convert)
+# --quick: the bait read (I'm using a single carefully chosen long read)
+# -end: number of iterations to do
+# -clean: discard intermediate steps (sure)
+# -sample and -ref: ID names
+```
+
 
 
 ## Second attempt
