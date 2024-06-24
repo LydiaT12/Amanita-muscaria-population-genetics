@@ -61,7 +61,7 @@ Now gapreads.fastq is a fastq file containing the three long reads which justify
 
 
 # MITObim
-
+<!--
 Docker/singularity commands:
 
 Sooo... to make this docker run as a singularity, I first load singularity
@@ -85,7 +85,7 @@ The image had a lot of empty files. The links to the docker images were broken. 
 
 
 ## Singularity 2
-
+-->
 ```
 module load Singularity
 singularity pull docker://chrishah/mitobim
@@ -106,7 +106,7 @@ Do I ... just run it?
 ```
 singularity run mitobim_latest.sif 
 MITObim.pl
-  MITObim.pl -sample MITOtest -ref Amamus_LR1 -readpool ~/PATH/TO/SHORTREADS.fastq --quick ~/PATH/TO/SHORTREADS.fasta -end 100 --clean &> log
+  MITObim.pl -sample MITOtest -ref Amamus_LR1 -readpool ../../trimmed_H12_1.fastq --quick gapread.fasta -end 100 --clean &> log_test1
 
 # -readpool: are the pool of short reads to assemble with. These need to be interleaved (There should be a way to convert)
 # --quick: the bait read (I'm using a single carefully chosen long read)
@@ -116,7 +116,7 @@ MITObim.pl
 ```
 
 
-
+<!--
 ## Second attempt
 so then I tried with the installing it option. I downloaded MIRA
 ```
@@ -129,6 +129,6 @@ Then I tried ```git clone --recursive git://github.com/chrishah/MITObim.git```
 This got a timeout error. 
 
 I'm going to stop and cry. Then learn about docker/container things. 
-
+-->
 
 
