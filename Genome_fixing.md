@@ -106,7 +106,7 @@ Do I ... just run it?
 ```
 singularity run mitobim_latest.sif 
 MITObim.pl
-  MITObim.pl -sample MITOtest -ref Amamus_LR1 -readpool ../../trimmed_H12_1.fastq --quick gapread.fasta -end 100 --clean &> log_test1
+  MITObim.pl -sample MITOtest -ref Amamus_LR1 -readpool ../../trimmed_H12_1.fastq --quick gapread.fasta -end 10 --clean &> log_test1
 
 # -readpool: are the pool of short reads to assemble with. These need to be interleaved (There should be a way to convert)
 # --quick: the bait read (I'm using a single carefully chosen long read)
