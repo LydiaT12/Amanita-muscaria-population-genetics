@@ -134,4 +134,51 @@ MITObim assembled something. I don't know if it's any good or if it fills the ga
 3. I want to compare the four assemblies; three from mitobim plus scaffold 1. I wanna align them all first. Maybe with MUMmer, and look at the overlaps in table format?
 
 
+## Interleave the reads
+
+Install SeqFu software
+
+```
+module load Miniconda3
+conda create -n seqfuenvt #setup only
+source activate seqfuenvt
+conda install -c conda-forge -c bioconda "seqfu>1.10" #setup only
+```
+
+Run the software
+
+```
+seqfu ilv -1 ../trimmed_H12_1.fastq -2 ../trimmed_H12_2.fastq > trimmed_H12_interleaved.fastq
+```
+
+To get out of the conda environmnet
+```
+conda deactivate
+```
+
+## Compare two sequences
+
+```
+module load MUMmer
+nucmer iteration5/MITOtest-Amamus_LR1-it5_noIUPAC.fasta ../../complete_assembly_with_mt.fasta 
+delta-filter -r out.delta > gap1.filter.delta
+show-coords -c gap1.filter.delta > gap1.coords
+```
+
+About 60% of this newly assembled bit overlaps with Scaffold 1.
+
+## Details
+I could try to quickmerge and see if anything changes?
+
+
+
+
+
+
+
+
+
+
+
+
 
