@@ -127,7 +127,9 @@ contig length: 17779
 
 Try for the second gap read
 ```
-MITObim.pl -sample MITOtest -ref Amamus_LR2 -readpool ../trimmed_H12_interleaved.fastq --quick gap2.fasta -end 10 --clean &> log_test2
+singularity run ../mitobim_latest.sif
+MITObim.pl -sample MITOtest -ref Amamus_LR2 -readpool ../trimmed_H12_interleaved.fastq --quick gap2.fasta -end 10 --clean &> log_test2 #failed on an complex error
+MITObim.pl -sample MITOtest3 -ref Amamus_LR3 -readpool ../../trimmed_H12_interleaved.fastq --quick gapread3.fasta -end 10 --clean &> log_test3 #moved to a subfolder and tried again
 ```
 
 ## What next?
