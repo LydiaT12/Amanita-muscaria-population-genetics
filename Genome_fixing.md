@@ -125,6 +125,11 @@ readpool contains 222904 reads
 assembly contains 1 contig(s)
 contig length: 17779
 
+Try for the second gap read
+```
+MITObim.pl -sample MITOtest -ref Amamus_LR2 -readpool ../trimmed_H12_interleaved.fastq --quick gap2.fasta -end 10 --clean &> log_test2
+```
+
 ## What next?
 
 MITObim assembled something. I don't know if it's any good or if it fills the gap. 
