@@ -4,3 +4,10 @@ tabix -p vcf HD.S1.phased.vcf.gz # index them
 cat ../../Amanita_scaffold1.fasta | vcf-consensus -i -H 1 -s S1 HD.S1.phased.vcf.gz  > temp.fa #vcftools tool to create fasta from phased vcf H1 is first haplotype
 samtools faidx temp.fa index fasta
 samtools faidx temp.fa Scaffold1_Amanita_muscaria:10-10 #Get position 10 in fasta (1-10 would be one to ten)
+
+
+
+
+cat them with
+for file in PR_fasta/*; do cat PR.allphased.fa ${file} >> PR.allphased.fa; done
+for file in HD_fasta/*; do cat HD.allphased.fa ${file} >> HD.allphased.fa; done
