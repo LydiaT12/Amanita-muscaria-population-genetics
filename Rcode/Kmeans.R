@@ -1,20 +1,17 @@
 setwd("C:/Users/Lydia/OneDrive - University of Otago/Documents/PhD/PhD - Botany/R")
 library(poppr)
 library(vcfR)
+#library(Biostrings)
 library(ape)
-# Read in dataset and forest groups:
-# vcf_file <- read.vcfR("filtered_dataset_noclone_thinned.vcf.gz")
-vcf_file <- read.vcfR("mitogenome_filtered_a2.noclone.vcf.gz")
-#vcf_file <- read.vcfR("PRlocus.noclone.vcf.gz")
-variantDataset <- vcfR2genlight(vcf_file)
-forest_cl <- c("F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","H","H","H","H","H","H","H","H","H","H","H","H","H","H","H","H","H","H","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","T","T","T","T","T","T","T","T","T","T","T","T","T","T","T","T","T","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W")
-forest_cl_m1 <- c("F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","H","H","H","H","H","H","H","H","H","H","H","H","H","H","H","H","H","H","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","T","T","T","T","T","T","T","T","T","T","T","T","T","T","T","T","T","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W") # I removed one sample from the dataset because it wasn't well phased. I think it might have been W14, so I removed that from this vector, but I'm not at all confident. 
-forest <- c("F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","H","H","H","H","H","H","H","H","H","H","H","H","H","H","H","H","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","T","T","T","T","T","T","T","T","T","T","T","T","T","T","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W")
-Forest <- c(forest_cl_m1, forest_cl_m1)
+## Read in the appropriate dataset and forest groups:
+vcf_file <- read.vcfR("filtered_dataset_noclone_thinned.vcf.gz") #nuclear genome, no clone duplicates
+# vcf_file <- read.vcfR("mitogenome_filtered_a2.noclone.vcf.gz") #mitogenome, no clone duplicates
+variantDataset <- vcfR2genlight(vcf_file) #convert the file to a genlight
+# variantDataset <- fasta2genlight("HD_phasedset.c.fasta") #HD phased region c (all individuals)
 
-#prfasta1 <- readDNAStringSet("PR.allphased.fa")
-# prfasta <- read.FASTA("PR.allphased.fa")
-variantDataset <- fasta2genlight("HD_phasedset.c.fasta")
+#forest_cl <- c("F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","H","H","H","H","H","H","H","H","H","H","H","H","H","H","H","H","H","H","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","T","T","T","T","T","T","T","T","T","T","T","T","T","T","T","T","T","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W") #forest sites with all clones
+Forest <- c("F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","H","H","H","H","H","H","H","H","H","H","H","H","H","H","H","H","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","T","T","T","T","T","T","T","T","T","T","T","T","T","T","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W") #forest sites for the clone-corrected dataset
+
 
 
 # Try K-mean clustering to look for population structure. First K=3
@@ -31,8 +28,8 @@ variantDataset <- fasta2genlight("HD_phasedset.c.fasta")
 
 library(ggplot2)
 library(reshape2)
-# my_k <- 2:5   #values that I try # nor nuclear genome
-my_k <- seq(2, 8, by = 2) # values for mitogenome
+my_k <- 2:5   #values that I try # for nuclear genome
+# my_k <- seq(2, 8, by = 2) # values for mitogenome
 
 grp_l <- vector(mode = "list", length = length(my_k))
 dapc_l <- vector(mode = "list", length = length(my_k))
@@ -49,16 +46,16 @@ for(i in 1:length(dapc_l)){
 my_pal <- RColorBrewer::brewer.pal(n=8, name = "Dark2")
 
 
-my_df <- as.data.frame(dapc_l[[4]]$ind.coord)
-my_df$Group <- dapc_l[[4]]$grp
+my_df <- as.data.frame(dapc_l[[2]]$ind.coord)
+my_df$Group <- dapc_l[[2]]$grp
 my_df$Forest <- Forest
 head(my_df)
 
 p2 <- ggplot(my_df, aes(x = LD1, y = LD2, color = Group, fill = Group, shape = Forest))
 p2 <- p2 + geom_point(size = 4)
 p2 <- p2 + theme_bw()
-p2 <- p2 + scale_color_manual(values=c(my_pal))
-p2 <- p2 + scale_fill_manual(values=c(paste(my_pal, "66", sep = "")))
+#p2 <- p2 + scale_color_manual(values=c(my_pal))
+#p2 <- p2 + scale_fill_manual(values=c(paste(my_pal, "66", sep = "")))
 p2
 
 
@@ -115,7 +112,7 @@ p3
 library(ggplot2)
 library(reshape2)
 library(adegenet)
-nk <- 40 # 15 for MAT
+nk <- 8 # Number of K to try. Values: 8 for nuclear, 8 for mitogenome, 40 for HDc
 myMat <- matrix(nrow=10, ncol=nk)
 colnames(myMat) <- 1:ncol(myMat)
 for(i in 1:nrow(myMat)){
