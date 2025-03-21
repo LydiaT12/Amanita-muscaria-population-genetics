@@ -1,7 +1,6 @@
 # Concatenate the phylip files of three gene into one phylip file with all (up to three) genes aligned and concatenated for each individual
 
 
-setwd("C:/Users/Lydia/OneDrive - University of Otago/Documents/PhD/PhD - Botany/R/treefiles")
 
 library(ape)
 
