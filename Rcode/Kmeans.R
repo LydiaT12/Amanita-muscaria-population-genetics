@@ -1,4 +1,3 @@
-setwd("C:/Users/Lydia/OneDrive - University of Otago/Documents/PhD/PhD - Botany/R")
 library(poppr)
 library(vcfR)
 #library(Biostrings)
