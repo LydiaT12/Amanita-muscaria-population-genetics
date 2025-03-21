@@ -1,7 +1,6 @@
 library(ggplot2)
 library(tidyverse)
 library(ggpubr)
-setwd("C:/Users/Lydia/OneDrive - University of Otago/Documents/PhD/PhD - Botany/R/Data")
 
 # Provide path to input. Can be pi or Dxy.
 inp<-read.table("1to28win5000_pi.txt",sep="\t",header=T)
