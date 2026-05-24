@@ -2,7 +2,10 @@ I want to estimate \pi with angsd. This has four steps:
 
 1. Call genotype likelihoods
 2. Estimate SFS
+3. Estimate per-site thetas
+4. Make a conclusion about pi
 
+## Call genotype likelihoods
 Example:
 ```
 ./angsd -bam bam.filelist -doSaf 1 -anc chimpHg19.fa -GL 1 -P 24 -out out 
@@ -27,6 +30,19 @@ samtools faidx ../../01.VariantCalling/1.ref_genome/Amanita_muscaria_genome_2024
 
 Now run the angsd genotype likelihood calling:
 ```
+module load angsd/0.935-GCC-9.2.0
 angsd -bam bamfiles.txt -doSaf 1 -doGlf 2 -ref ../../01.VariantCalling/1.ref_genome/Amanita_muscaria_genome_2024_masked.fasta -GL 1 -P 24 -out angsd_out
 ```
+
+## Estimate SFS
+
+```
+angsd realSFS angsd_out.saf.idx -P 24 -fold 1 > angsd_out.sfs
+angsd realSFS saf2theta out.saf.idx -outname angsd_outsfs -sfs angsd_out.sfs -fold 1
+```
+
+
+
+
+
 
