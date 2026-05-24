@@ -22,6 +22,6 @@ Reference file:
 ../../01.VariantCalling/1.ref_genome/Amanita_muscaria_genome_2024_masked.fasta
 
 ```
-./angsd -bam bamfiles.txt -doSaf 1 -doGlf 2 -ref ../../01.VariantCalling/1.ref_genome/Amanita_muscaria_genome_2024_masked.fasta -GL 1 -P 24 -out angsd_out
+angsd -bam bamfiles.txt -doSaf 1 -doGlf 2 -ref ../../01.VariantCalling/1.ref_genome/Amanita_muscaria_genome_2024_masked.fasta -GL 1 -P 24 -out angsd_out
 ```
 
