@@ -1,0 +1,27 @@
+I want to estimate \pi with angsd. This has four steps:
+
+1. Call genotype likelihoods
+2. 
+
+Example:
+```
+./angsd -bam bam.filelist -doSaf 1 -anc chimpHg19.fa -GL 1 -P 24 -out out 
+```
+-GL 1 says get genotype likelihoods from bam
+-bam = list of all BAM paths the mapped bam files
+-ref is the reference
+-doGlf 2
+
+
+
+Make a list of bam files 
+```
+for file in ../../01.VariantCalling/3.mapped_reads/trimmed_*.sorted.bam; do echo "${file}">>bamfiles.txt; done
+```
+Reference file:
+../../01.VariantCalling/1.ref_genome/Amanita_muscaria_genome_2024_masked.fasta
+
+```
+./angsd -bam bamfiles.txt -doSaf 1 -doGlf 2 -ref ../../01.VariantCalling/1.ref_genome/Amanita_muscaria_genome_2024_masked.fasta -GL 1 -P 24 -out angsd_out
+```
+
