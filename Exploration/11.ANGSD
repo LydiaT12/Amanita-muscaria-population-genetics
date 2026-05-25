@@ -37,12 +37,33 @@ angsd -bam bamfiles.txt -doSaf 1 -doGlf 2 -ref ../../01.VariantCalling/1.ref_gen
 ## Estimate SFS
 
 ```
-angsd realSFS angsd_out.saf.idx -P 24 -fold 1 > angsd_out.sfs
-angsd realSFS saf2theta out.saf.idx -outname angsd_outsfs -sfs angsd_out.sfs -fold 1
+realSFS test2_angsd_out.saf.idx -P 24 -fold 1 > new_test2_angsd_out.sfs 
+```
+
+## Per-site theta stats 
+
+```
+realSFS saf2theta test2_angsd_out.saf.idx -outname outsfs -sfs new_test2_angsd_out.sfs -fold 1
 ```
 
 
+## Get thetas
+This gets them for each site:
+```
+thetaStat do_stat outsfs.thetas.idx
+```
 
+This works with sliding windows of 5000:
+```
+thetaStat do_stat outsfs.thetas.idx -win 5000 -step 5000  -out Windowthetas
+```
+
+This produces output of the form
+```
+#(indexStart,indexStop)(firstPos_withData,lastPos_withData)(WinStart,WinStop)   Chr     WinCenter       tW      tP      tF      tH      tL      Tajima  fuf     fud     fayh    zeng    nSites
+(4998,9947)(5000,10000)(5000,10000)     Scaffold100_Amanita_muscaria    7500    69.037235       70.122991       0.000000        0.000000        0.000000        0.050469        1.989634        3.398021        0.577330    -0.495759        4949
+```
+I care about tP, which is the pairwise estimate of theta, and nSites, the number of sites over which this was esitimated. The per-site estimate of pi for each window can be found as tP/nSites. 
 
 
 
